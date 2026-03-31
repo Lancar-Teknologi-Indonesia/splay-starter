@@ -67,8 +67,15 @@ export interface AnimeEpisode {
   id: string;
   anime_id: string;
   episode_number: number;
-  title: string | null;
-  video_urls: Record<string, string>;
+  episode_title: string | null;
+  has_subtitle: boolean;
+  subtitle_langs: string[] | null;
+  thumbnail: string | null;
+}
+
+export interface AnimeDetail {
+  anime: Anime;
+  assets: Record<string, string> | null;
 }
 
 interface ListResponse<T> {
@@ -116,11 +123,11 @@ export async function getPopularAnime(page = 1, limit = 20) {
 }
 
 export async function getAnime(id: string) {
-  return api<{ data: Anime }>(`/api/anime/${id}`);
+  return api<{ data: AnimeDetail }>(`/api/anime/${id}`);
 }
 
-export async function getAnimeEpisodes(id: string) {
-  return api<{ data: { episodes: AnimeEpisode[] } }>(`/api/anime/${id}/episodes`);
+export async function getAnimeEpisodes(id: string, page = 1, limit = 100) {
+  return api<{ data: AnimeEpisode[]; meta: { page: number; total: number; total_pages: number } }>(`/api/anime/${id}/episodes?page=${page}&limit=${limit}`);
 }
 
 // ── MovieBox Endpoints ───────────────────────────────────────────
