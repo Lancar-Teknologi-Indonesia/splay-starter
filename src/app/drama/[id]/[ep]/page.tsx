@@ -19,11 +19,11 @@ export default async function PlayerPage({
 
   if (!episode) {
     return (
-      <div className="text-center py-20">
-        <h1 className="text-xl text-white mb-2">Episode not found</h1>
-        <Link href={`/drama/${id}`} className="text-blue-400 text-sm">
-          Back to drama
-        </Link>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-xl text-white mb-2">Episode not found</h1>
+          <Link href={`/drama/${id}`} className="text-[#e50914] text-sm hover:underline">Back to drama</Link>
+        </div>
       </div>
     );
   }
@@ -32,100 +32,98 @@ export default async function PlayerPage({
   const nextEp = episodes.data.find((e) => e.episode_index === epIndex + 1);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Video Player */}
-      <div className="aspect-video rounded-2xl overflow-hidden bg-black mb-4">
-        {episode.video_url ? (
-          <video
-            src={episode.video_url}
-            controls
-            autoPlay
-            className="w-full h-full"
-            crossOrigin="anonymous"
-          >
-            {/* Subtitles */}
-            {episode.subtitles &&
-              Object.entries(episode.subtitles).map(([lang, url]) => (
-                <track
-                  key={lang}
-                  kind="subtitles"
-                  src={url}
-                  srcLang={lang}
-                  label={lang.toUpperCase()}
-                  default={lang === "en" || lang === "id"}
-                />
-              ))}
-          </video>
-        ) : episode.qualities ? (
-          // HLS or multi-quality — pick highest available
-          <video
-            src={Object.values(episode.qualities).pop() ?? ""}
-            controls
-            autoPlay
-            className="w-full h-full"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-zinc-500">
-            <div className="text-center">
-              <p className="text-lg mb-1">No video available</p>
-              <p className="text-sm">Your API plan may not include video access.</p>
-              <p className="text-xs mt-2 text-zinc-600">
-                Upgrade at{" "}
-                <a href="https://hub.splay.id/api-dashboard" className="text-blue-400">
-                  hub.splay.id
-                </a>
-              </p>
+    <div className="bg-black min-h-screen">
+      {/* Video Player — full width */}
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="aspect-video bg-black">
+          {episode.video_url ? (
+            <video
+              src={episode.video_url}
+              controls
+              autoPlay
+              className="w-full h-full"
+              crossOrigin="anonymous"
+            >
+              {episode.subtitles &&
+                Object.entries(episode.subtitles).map(([lang, url]) => (
+                  <track
+                    key={lang}
+                    kind="subtitles"
+                    src={url}
+                    srcLang={lang}
+                    label={lang.toUpperCase()}
+                    default={lang === "en" || lang === "id"}
+                  />
+                ))}
+            </video>
+          ) : episode.qualities ? (
+            <video
+              src={Object.values(episode.qualities).pop() ?? ""}
+              controls
+              autoPlay
+              className="w-full h-full"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-lg text-white/60 mb-2">No video available</p>
+                <p className="text-sm text-zinc-500">
+                  Upgrade your plan at{" "}
+                  <a href="https://hub.splay.id/api-dashboard" className="text-[#e50914] hover:underline">hub.splay.id</a>
+                </p>
+              </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Info bar */}
+      <div className="max-w-[1400px] mx-auto px-6 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-xl font-semibold text-white">{d.title}</h1>
+            <p className="text-sm text-zinc-500 mt-0.5">
+              Episode {epIndex}
+              {episode.episode_name && ` — ${episode.episode_name}`}
+            </p>
           </div>
-        )}
-      </div>
-
-      {/* Title + Nav */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-lg font-semibold text-white">
-            {d.title} — EP {epIndex}
-          </h1>
-          {episode.episode_name && (
-            <p className="text-sm text-zinc-500">{episode.episode_name}</p>
-          )}
+          <div className="flex gap-2">
+            {prevEp && (
+              <Link
+                href={`/drama/${id}/${prevEp.episode_index}`}
+                className="px-4 py-2 rounded-md bg-white/10 text-sm text-white hover:bg-white/20 transition-colors"
+              >
+                Prev
+              </Link>
+            )}
+            {nextEp && (
+              <Link
+                href={`/drama/${id}/${nextEp.episode_index}`}
+                className="px-4 py-2 rounded-md bg-[#e50914] text-sm text-white font-medium hover:bg-[#f40612] transition-colors"
+              >
+                Next Episode
+              </Link>
+            )}
+          </div>
         </div>
-        <div className="flex gap-2">
-          {prevEp && (
-            <Link
-              href={`/drama/${id}/${prevEp.episode_index}`}
-              className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-sm text-zinc-300 hover:bg-white/[0.1]"
-            >
-              Prev
-            </Link>
-          )}
-          {nextEp && (
-            <Link
-              href={`/drama/${id}/${nextEp.episode_index}`}
-              className="px-3 py-1.5 rounded-lg bg-blue-600 text-sm text-white hover:bg-blue-500"
-            >
-              Next
-            </Link>
-          )}
-        </div>
-      </div>
 
-      {/* Episode List */}
-      <h2 className="text-sm font-medium text-zinc-400 mb-3">All Episodes</h2>
-      <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-1.5">
-        {episodes.data.map((e) => (
-          <Link
-            key={e.id}
-            href={`/drama/${id}/${e.episode_index}`}
-            className={`flex items-center justify-center h-8 rounded-md text-xs transition-colors ${
-              e.episode_index === epIndex
-                ? "bg-blue-600 text-white"
-                : "bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08]"
-            }`}
-          >
-            {e.episode_index}
-          </Link>
-        ))}
+        {/* Episode grid */}
+        <h2 className="text-sm font-medium text-zinc-400 mb-3">All Episodes</h2>
+        <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-16 gap-1.5">
+          {episodes.data.map((e) => (
+            <Link
+              key={e.id}
+              href={`/drama/${id}/${e.episode_index}`}
+              className={`flex items-center justify-center h-9 rounded text-xs transition-colors ${
+                e.episode_index === epIndex
+                  ? "bg-[#e50914] text-white font-medium"
+                  : "bg-white/5 text-zinc-500 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {e.episode_index}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

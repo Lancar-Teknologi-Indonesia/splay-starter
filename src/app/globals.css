@@ -1,19 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --accent: #3b82f6;
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --bg-hover: #1a1a1a;
+  --accent: #e50914;
+  --accent-hover: #f40612;
 }
 
 body {
-  background: var(--bg-primary);
-  color: #e4e4e7;
-  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: #e5e5e5;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+/* Hide scrollbar on horizontal rows */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Smooth fade edges on rows */
+.row-fade {
+  mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+}
+
+/* Card hover zoom */
+.card-zoom { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.card-zoom:hover {
+  transform: scale(1.08);
+  z-index: 10;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+/* Hero gradient overlay */
+.hero-gradient {
+  background: linear-gradient(to top, var(--bg) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.3) 100%);
+}
+.hero-gradient-right {
+  background: linear-gradient(to right, var(--bg) 0%, transparent 50%);
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
