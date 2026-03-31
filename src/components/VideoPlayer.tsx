@@ -1,62 +1,77 @@
 "use client";
 
-import "@vidstack/react/player/styles/default/theme.css";
-import "@vidstack/react/player/styles/default/layouts/video.css";
-import { MediaPlayer, MediaProvider, Track } from "@vidstack/react";
-import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/layouts/default";
+import { useRef, useEffect, useState } from "react";
+import { Plyr, usePlyr, type APITypes, type PlyrSource } from "plyr-react";
+import "plyr-react/plyr.css";
 
 interface VideoPlayerProps {
   src: string;
   subtitleUrl?: string | null;
   subtitles?: Record<string, string> | null;
   title?: string;
-  episodeLabel?: string;
   poster?: string | null;
 }
 
-export default function VideoPlayer({ src, subtitleUrl, subtitles, title, episodeLabel, poster }: VideoPlayerProps) {
-  const playerTitle = episodeLabel ? `${title} — ${episodeLabel}` : title;
+export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: VideoPlayerProps) {
+  // Build tracks — route through /api/subtitle proxy for SRT→VTT conversion
+  const tracks: PlyrSource["tracks"] = [];
+  const proxyUrl = (url: string) => `/api/subtitle?url=${encodeURIComponent(url)}`;
+
+  if (subtitles) {
+    Object.entries(subtitles).forEach(([lang, url]) => {
+      tracks.push({
+        kind: "captions",
+        label: langLabel(lang),
+        srcLang: lang,
+        src: proxyUrl(url),
+        default: lang === "id" || lang === "en",
+      });
+    });
+  } else if (subtitleUrl) {
+    tracks.push({
+      kind: "captions",
+      label: "Indonesian",
+      srcLang: "id",
+      src: proxyUrl(subtitleUrl),
+      default: true,
+    });
+  }
+
+  const source: PlyrSource = {
+    type: "video",
+    sources: [{ src, type: "video/mp4" }],
+    tracks,
+    ...(poster ? { poster } : {}),
+  };
 
   return (
-    <MediaPlayer
-      src={src}
-      crossOrigin
-      playsInline
-      title={playerTitle ?? ""}
-      poster={poster ?? ""}
-      aspectRatio="16/9"
-      className="w-full"
-    >
-      <MediaProvider>
-        {/* Multi-language subtitle tracks */}
-        {subtitles &&
-          Object.entries(subtitles).map(([lang, url]) => (
-            <Track
-              key={lang}
-              src={url}
-              kind="subtitles"
-              label={langLabel(lang)}
-              language={lang}
-              type={url.endsWith(".vtt") ? "vtt" : "srt"}
-              default={lang === "id" || lang === "en"}
-            />
-          ))}
-
-        {/* Single subtitle file fallback */}
-        {!subtitles && subtitleUrl && (
-          <Track
-            src={subtitleUrl}
-            kind="subtitles"
-            label="Indonesian"
-            language="id"
-            type={subtitleUrl.endsWith(".vtt") ? "vtt" : "srt"}
-            default
-          />
-        )}
-      </MediaProvider>
-
-      <DefaultVideoLayout icons={defaultLayoutIcons} />
-    </MediaPlayer>
+    <Plyr
+      source={source}
+      options={{
+        controls: [
+          "play-large",
+          "rewind",
+          "play",
+          "fast-forward",
+          "progress",
+          "current-time",
+          "duration",
+          "mute",
+          "volume",
+          "captions",
+          "settings",
+          "pip",
+          "airplay",
+          "fullscreen",
+        ],
+        settings: ["captions", "quality", "speed"],
+        captions: { active: true, update: true, language: "id" },
+        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+        keyboard: { focused: true, global: true },
+        tooltips: { controls: true, seek: true },
+        invertTime: false,
+      }}
+    />
   );
 }
 
@@ -70,9 +85,6 @@ function langLabel(code: string): string {
     ko: "Korean",
     th: "Thai",
     vi: "Vietnamese",
-    ar: "Arabic",
-    es: "Spanish",
-    pt: "Portuguese",
     in: "Indonesian",
   };
   return map[code.toLowerCase()] ?? code.toUpperCase();
