@@ -13,7 +13,17 @@ body {
   color: #e5e5e5;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
+
+/* Safe area for bottom nav on notched phones */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
+
+/* Touch-friendly: prevent text selection on interactive elements */
+button, a { -webkit-touch-callout: none; user-select: none; }
+
+/* Prevent overscroll bounce on iOS */
+html { overscroll-behavior: none; }
 
 /* Hide scrollbar on horizontal rows */
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

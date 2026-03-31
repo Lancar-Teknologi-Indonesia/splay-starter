@@ -34,7 +34,7 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="pt-24 px-6 md:px-12 max-w-[1400px] mx-auto min-h-screen">
+    <div className="pt-16 md:pt-24 px-4 md:px-12 max-w-[1400px] mx-auto min-h-screen">
       <form onSubmit={handleSearch} className="max-w-2xl mb-10">
         <div className="relative">
           <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

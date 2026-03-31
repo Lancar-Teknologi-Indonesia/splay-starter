@@ -19,12 +19,15 @@ export default function ContentRow({ title, href, children }: ContentRowProps) {
   };
 
   return (
-    <section className="relative group/row mb-8">
-      <div className="flex items-center justify-between px-6 md:px-12 mb-2">
-        <h2 className="text-lg md:text-xl font-semibold text-white">
+    <section className="relative group/row mb-6 md:mb-8">
+      <div className="flex items-center justify-between px-4 md:px-12 mb-1.5 md:mb-2">
+        <h2 className="text-base md:text-xl font-semibold text-white">
           {href ? (
             <Link href={href} className="hover:text-white/70 transition-colors">
-              {title} <span className="text-sm text-[#e50914] opacity-0 group-hover/row:opacity-100 transition-opacity">&rsaquo;</span>
+              {title}{" "}
+              <span className="text-sm text-[#e50914] md:opacity-0 md:group-hover/row:opacity-100 transition-opacity">
+                &rsaquo;
+              </span>
             </Link>
           ) : (
             title
@@ -33,10 +36,10 @@ export default function ContentRow({ title, href, children }: ContentRowProps) {
       </div>
 
       <div className="relative">
-        {/* Scroll arrows */}
+        {/* Scroll arrows — desktop only */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-0 bottom-0 w-12 z-20 bg-black/40 hover:bg-black/60 opacity-0 group-hover/row:opacity-100 transition-opacity flex items-center justify-center"
+          className="hidden md:flex absolute left-0 top-0 bottom-0 w-12 z-20 bg-black/40 hover:bg-black/60 opacity-0 group-hover/row:opacity-100 transition-opacity items-center justify-center"
         >
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -44,16 +47,17 @@ export default function ContentRow({ title, href, children }: ContentRowProps) {
         </button>
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-0 bottom-0 w-12 z-20 bg-black/40 hover:bg-black/60 opacity-0 group-hover/row:opacity-100 transition-opacity flex items-center justify-center"
+          className="hidden md:flex absolute right-0 top-0 bottom-0 w-12 z-20 bg-black/40 hover:bg-black/60 opacity-0 group-hover/row:opacity-100 transition-opacity items-center justify-center"
         >
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
 
+        {/* Scrollable row — touch-friendly snap on mobile */}
         <div
           ref={scrollRef}
-          className="flex gap-2 overflow-x-auto hide-scrollbar px-6 md:px-12 pb-4 row-fade"
+          className="flex gap-2 md:gap-2 overflow-x-auto hide-scrollbar px-4 md:px-12 pb-2 snap-x snap-mandatory md:snap-none"
         >
           {children}
         </div>

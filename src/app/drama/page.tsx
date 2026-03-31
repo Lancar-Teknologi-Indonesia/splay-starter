@@ -11,9 +11,9 @@ export default async function DramaListPage({
   const data = await getDramas(page, 24);
 
   return (
-    <div className="pt-24 px-6 md:px-12 max-w-[1800px] mx-auto">
-      <h1 className="text-3xl font-bold text-white mb-8">All Dramas</h1>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3">
+    <div className="pt-16 md:pt-24 px-4 md:px-12 max-w-[1800px] mx-auto">
+      <h1 className="text-xl md:text-3xl font-bold text-white mb-4 md:mb-8">All Dramas</h1>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-2 md:gap-3">
         {data.data.map((d) => (
           <Link key={d.id} href={`/drama/${d.id}`} className="group">
             <div className="aspect-[2/3] rounded-md overflow-hidden bg-[#1a1a1a] card-zoom">
