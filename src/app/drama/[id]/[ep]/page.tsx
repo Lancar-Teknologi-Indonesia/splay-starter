@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getDrama } from "@/lib/splay";
-import VideoPlayer from "@/components/VideoPlayer";
+import AutoNextPlayer from "@/components/AutoNextPlayer";
 
 export default async function PlayerPage({
   params,
@@ -37,12 +37,12 @@ export default async function PlayerPage({
       {/* Custom Video Player */}
       <div className="w-full max-w-3xl mx-auto pt-12 md:pt-16 px-0 md:px-4">
         {videoSrc ? (
-          <VideoPlayer
+          <AutoNextPlayer
             src={videoSrc}
             subtitleUrl={episode.subtitle_url}
             subtitles={episode.subtitles as Record<string, string> | null}
-            title={d.title}
-            episodeLabel={`Episode ${epIndex}${episode.episode_name ? ` — ${episode.episode_name}` : ""}`}
+            poster={d.cover_url}
+            nextEpisodeUrl={nextEp ? `/drama/${id}/${nextEp.episode_index}` : null}
           />
         ) : (
           <div className="aspect-video bg-black flex items-center justify-center">
