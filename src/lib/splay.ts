@@ -95,8 +95,14 @@ export async function getTrendingDramas(page = 1, limit = 20) {
   return api<ListResponse<Drama>>(`/api/dramas/trending?page=${page}&limit=${limit}`);
 }
 
+export interface DramaDetail {
+  drama: Drama;
+  episodes: Episode[];
+  tags: { id: number; name: string; en_name: string }[];
+}
+
 export async function getDrama(id: number) {
-  return api<{ data: Drama }>(`/api/dramas/${id}`);
+  return api<{ data: DramaDetail }>(`/api/dramas/${id}`);
 }
 
 export async function getDramaEpisodes(id: number, page = 1, limit = 25) {

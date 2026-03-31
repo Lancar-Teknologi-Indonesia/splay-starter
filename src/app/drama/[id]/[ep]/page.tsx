@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDrama, getDramaEpisodes } from "@/lib/splay";
+import { getDrama } from "@/lib/splay";
 
 export default async function PlayerPage({
   params,
@@ -9,13 +9,10 @@ export default async function PlayerPage({
   const { id, ep } = await params;
   const epIndex = Number(ep);
 
-  const [drama, episodes] = await Promise.all([
-    getDrama(Number(id)),
-    getDramaEpisodes(Number(id), 1, 200),
-  ]);
+  const result = await getDrama(Number(id));
+  const { drama: d, episodes } = result.data;
 
-  const d = drama.data;
-  const episode = episodes.data.find((e) => e.episode_index === epIndex);
+  const episode = episodes.find((e) => e.episode_index === epIndex);
 
   if (!episode) {
     return (
@@ -28,30 +25,32 @@ export default async function PlayerPage({
     );
   }
 
-  const prevEp = episodes.data.find((e) => e.episode_index === epIndex - 1);
-  const nextEp = episodes.data.find((e) => e.episode_index === epIndex + 1);
+  const prevEp = episodes.find((e) => e.episode_index === epIndex - 1);
+  const nextEp = episodes.find((e) => e.episode_index === epIndex + 1);
+
+  // Pick the best video source
+  const videoSrc = episode.video_url
+    || (episode.qualities ? Object.values(episode.qualities).pop() : null);
 
   return (
     <div className="bg-black min-h-screen">
-      {/* Video — full width, no padding on mobile */}
+      {/* Video — full width on mobile */}
       <div className="w-full md:max-w-[1400px] md:mx-auto md:pt-16">
         <div className="aspect-video bg-black">
-          {episode.video_url ? (
+          {videoSrc ? (
             <video
-              src={episode.video_url}
+              key={videoSrc}
+              src={videoSrc}
               controls
-              autoPlay
               playsInline
               className="w-full h-full"
               crossOrigin="anonymous"
             >
               {episode.subtitles &&
                 Object.entries(episode.subtitles).map(([lang, url]) => (
-                  <track key={lang} kind="subtitles" src={url} srcLang={lang} label={lang.toUpperCase()} default={lang === "en" || lang === "id"} />
+                  <track key={lang} kind="subtitles" src={url as string} srcLang={lang} label={lang.toUpperCase()} default={lang === "en" || lang === "id"} />
                 ))}
             </video>
-          ) : episode.qualities ? (
-            <video src={Object.values(episode.qualities).pop() ?? ""} controls autoPlay playsInline className="w-full h-full" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center px-4">
@@ -67,7 +66,6 @@ export default async function PlayerPage({
 
       {/* Info */}
       <div className="md:max-w-[1400px] md:mx-auto px-4 md:px-6 py-4 md:py-6">
-        {/* Title + navigation */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="min-w-0">
             <h1 className="text-base md:text-xl font-semibold text-white truncate">{d.title}</h1>
@@ -89,10 +87,9 @@ export default async function PlayerPage({
           </div>
         </div>
 
-        {/* Episode grid */}
         <h2 className="text-xs md:text-sm font-medium text-zinc-400 mb-2 md:mb-3">All Episodes</h2>
         <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-14 gap-1 md:gap-1.5">
-          {episodes.data.map((e) => (
+          {episodes.map((e) => (
             <Link
               key={e.id}
               href={`/drama/${id}/${e.episode_index}`}
