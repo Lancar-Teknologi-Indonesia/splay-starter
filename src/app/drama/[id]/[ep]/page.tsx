@@ -35,7 +35,7 @@ export default async function PlayerPage({
   return (
     <div className="bg-black min-h-screen">
       {/* Custom Video Player */}
-      <div className="w-full md:max-w-[1400px] md:mx-auto md:pt-16">
+      <div className="w-full max-w-3xl mx-auto pt-12 md:pt-16 px-0 md:px-4">
         {videoSrc ? (
           <VideoPlayer
             src={videoSrc}
@@ -57,7 +57,7 @@ export default async function PlayerPage({
       </div>
 
       {/* Info */}
-      <div className="md:max-w-[1400px] md:mx-auto px-4 md:px-6 py-4 md:py-6">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="min-w-0">
             <h1 className="text-base md:text-xl font-semibold text-white truncate">{d.title}</h1>

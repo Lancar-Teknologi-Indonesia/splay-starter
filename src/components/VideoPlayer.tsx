@@ -1,21 +1,27 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { Plyr, usePlyr, type APITypes, type PlyrSource } from "plyr-react";
+import dynamic from "next/dynamic";
+import { type PlyrSource } from "plyr-react";
+
+const PlyrNoSSR = dynamic(() => import("plyr-react").then((m) => m.Plyr), {
+  ssr: false,
+  loading: () => <div className="aspect-video bg-black rounded-lg" />,
+});
+
+// CSS imported globally to avoid SSR issues
 import "plyr-react/plyr.css";
 
 interface VideoPlayerProps {
   src: string;
   subtitleUrl?: string | null;
   subtitles?: Record<string, string> | null;
-  title?: string;
   poster?: string | null;
 }
 
 export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: VideoPlayerProps) {
-  // Build tracks — route through /api/subtitle proxy for SRT→VTT conversion
-  const tracks: PlyrSource["tracks"] = [];
   const proxyUrl = (url: string) => `/api/subtitle?url=${encodeURIComponent(url)}`;
+
+  const tracks: PlyrSource["tracks"] = [];
 
   if (subtitles) {
     Object.entries(subtitles).forEach(([lang, url]) => {
@@ -45,7 +51,7 @@ export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: Vid
   };
 
   return (
-    <Plyr
+    <PlyrNoSSR
       source={source}
       options={{
         controls: [
@@ -61,7 +67,6 @@ export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: Vid
           "captions",
           "settings",
           "pip",
-          "airplay",
           "fullscreen",
         ],
         settings: ["captions", "quality", "speed"],
@@ -70,6 +75,7 @@ export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: Vid
         keyboard: { focused: true, global: true },
         tooltips: { controls: true, seek: true },
         invertTime: false,
+        ratio: "16:9",
       }}
     />
   );
@@ -77,15 +83,8 @@ export default function VideoPlayer({ src, subtitleUrl, subtitles, poster }: Vid
 
 function langLabel(code: string): string {
   const map: Record<string, string> = {
-    id: "Indonesian",
-    en: "English",
-    ms: "Malay",
-    zh: "Chinese",
-    ja: "Japanese",
-    ko: "Korean",
-    th: "Thai",
-    vi: "Vietnamese",
-    in: "Indonesian",
+    id: "Indonesian", en: "English", ms: "Malay", zh: "Chinese",
+    ja: "Japanese", ko: "Korean", th: "Thai", vi: "Vietnamese", in: "Indonesian",
   };
   return map[code.toLowerCase()] ?? code.toUpperCase();
 }
