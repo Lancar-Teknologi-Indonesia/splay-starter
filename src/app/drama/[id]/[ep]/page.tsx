@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDrama } from "@/lib/splay";
+import VideoPlayer from "@/components/VideoPlayer";
 
 export default async function PlayerPage({
   params,
@@ -28,45 +29,31 @@ export default async function PlayerPage({
   const prevEp = episodes.find((e) => e.episode_index === epIndex - 1);
   const nextEp = episodes.find((e) => e.episode_index === epIndex + 1);
 
-  // Pick the best video source
   const videoSrc = episode.video_url
     || (episode.qualities ? Object.values(episode.qualities).pop() : null);
 
   return (
     <div className="bg-black min-h-screen">
-      {/* Video — full width on mobile */}
+      {/* Custom Video Player */}
       <div className="w-full md:max-w-[1400px] md:mx-auto md:pt-16">
-        <div className="aspect-video bg-black">
-          {videoSrc ? (
-            <video
-              key={videoSrc}
-              src={videoSrc}
-              controls
-              playsInline
-              className="w-full h-full"
-              crossOrigin="anonymous"
-            >
-              {/* Multi-language subtitles */}
-              {episode.subtitles &&
-                Object.entries(episode.subtitles).map(([lang, url]) => (
-                  <track key={lang} kind="subtitles" src={url as string} srcLang={lang} label={lang.toUpperCase()} default={lang === "en" || lang === "id"} />
-                ))}
-              {/* Single subtitle file */}
-              {!episode.subtitles && episode.subtitle_url && (
-                <track kind="subtitles" src={episode.subtitle_url} srcLang="id" label="Indonesian" default />
-              )}
-            </video>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center px-4">
-                <p className="text-base md:text-lg text-white/60 mb-2">No video available</p>
-                <p className="text-xs md:text-sm text-zinc-500">
-                  Upgrade at <a href="https://hub.splay.id/api-dashboard" className="text-[#e50914]">hub.splay.id</a>
-                </p>
-              </div>
+        {videoSrc ? (
+          <VideoPlayer
+            src={videoSrc}
+            subtitleUrl={episode.subtitle_url}
+            subtitles={episode.subtitles as Record<string, string> | null}
+            title={d.title}
+            episodeLabel={`Episode ${epIndex}${episode.episode_name ? ` — ${episode.episode_name}` : ""}`}
+          />
+        ) : (
+          <div className="aspect-video bg-black flex items-center justify-center">
+            <div className="text-center px-4">
+              <p className="text-base md:text-lg text-white/60 mb-2">No video available</p>
+              <p className="text-xs md:text-sm text-zinc-500">
+                Upgrade at <a href="https://hub.splay.id/api-dashboard" className="text-[#e50914]">hub.splay.id</a>
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Info */}
