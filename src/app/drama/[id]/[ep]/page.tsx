@@ -46,10 +46,15 @@ export default async function PlayerPage({
               className="w-full h-full"
               crossOrigin="anonymous"
             >
+              {/* Multi-language subtitles */}
               {episode.subtitles &&
                 Object.entries(episode.subtitles).map(([lang, url]) => (
                   <track key={lang} kind="subtitles" src={url as string} srcLang={lang} label={lang.toUpperCase()} default={lang === "en" || lang === "id"} />
                 ))}
+              {/* Single subtitle file */}
+              {!episode.subtitles && episode.subtitle_url && (
+                <track kind="subtitles" src={episode.subtitle_url} srcLang="id" label="Indonesian" default />
+              )}
             </video>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
