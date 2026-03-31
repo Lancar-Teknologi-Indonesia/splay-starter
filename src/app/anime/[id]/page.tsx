@@ -18,8 +18,8 @@ export default async function AnimeDetailPage({
       {/* Header */}
       <div className="flex gap-6 mb-8">
         <div className="w-40 flex-shrink-0">
-          {a.poster ? (
-            <img src={a.poster} alt={a.title} className="w-full rounded-xl" />
+          {a.cover_url ? (
+            <img src={a.cover_url} alt={a.name} className="w-full rounded-xl" />
           ) : (
             <div className="w-full aspect-[2/3] rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-600">
               No Cover
@@ -27,16 +27,11 @@ export default async function AnimeDetailPage({
           )}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">{a.title}</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">{a.name}</h1>
           <div className="flex flex-wrap gap-2 mb-3">
-            {a.status && (
-              <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-xs">
-                {a.status}
-              </span>
-            )}
-            {a.total_episodes && (
+            {a.available_episodes && (
               <span className="px-2 py-0.5 rounded-md bg-white/[0.06] text-zinc-400 text-xs">
-                {a.total_episodes} episodes
+                {a.available_episodes} episodes
               </span>
             )}
           </div>

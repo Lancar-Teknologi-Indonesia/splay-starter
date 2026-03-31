@@ -19,9 +19,9 @@ export default async function AnimeListPage({
           <ContentCard
             key={a.id}
             id={a.id}
-            title={a.title}
-            cover_url={a.poster}
-            subtitle={a.status ?? ""}
+            title={a.name}
+            cover_url={a.cover_url}
+            subtitle={a.available_episodes ? `${a.available_episodes} eps` : ""}
             href={`/anime/${a.id}`}
           />
         ))}

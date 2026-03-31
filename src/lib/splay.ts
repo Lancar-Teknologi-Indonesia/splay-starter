@@ -55,12 +55,12 @@ export interface Episode {
 
 export interface Anime {
   id: string;
-  title: string;
-  poster: string | null;
+  name: string;
+  cover_url: string | null;
   description: string | null;
   genres: string[];
-  status: string | null;
-  total_episodes: number | null;
+  available_episodes: number | null;
+  stats: { episodes: { sub: number } } | null;
 }
 
 export interface AnimeEpisode {
@@ -73,9 +73,12 @@ export interface AnimeEpisode {
 
 interface ListResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
+  meta: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+  };
 }
 
 // ── Drama Endpoints ──────────────────────────────────────────────
